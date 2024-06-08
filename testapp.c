@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
 #include "uapi_mm.h"
 
 typedef struct emp_ {
@@ -25,6 +22,6 @@ main(int argc, char **argv){
     mm_init();
     MM_REG_STRUCT(emp_t);
     MM_REG_STRUCT(student_t);
-
-    return 0;
+    mm_print_registered_page_families();
+    return 0; 
 }
