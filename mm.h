@@ -3,16 +3,15 @@
 
 #include <stdint.h> /*uint32_t*/
 
-#define MM_MAX_STRUCT_NAME 32
-
 typedef enum{
 
     MM_FALSE,
     MM_TRUE
 } vm_bool_t;
 
-
+/*Forward Declaration*/
 struct vm_page_family_;
+#define MM_MAX_STRUCT_NAME 32
 typedef struct vm_page_family_{
 
     char struct_name[MM_MAX_STRUCT_NAME];
@@ -32,7 +31,7 @@ typedef struct block_meta_data_{
 
     vm_bool_t is_free;
     uint32_t block_size;
-    uint32_t offset;    //offset from the start of the page
+    uint32_t offset;    /*offset from the start of the page*/
     struct block_meta_data_ *prev_block;
     struct block_meta_data_ *next_block;
 } block_meta_data_t;
@@ -61,6 +60,14 @@ typedef struct block_meta_data_{
         curr++,count++){
 
 #define ITERATE_PAGE_FAMILIES_END(vm_page_for_families_ptr, curr)   }}
+
+#define mm_bind_blocks_for_allocation(allocated_meta_block, free_meta_block)  \
+    free_meta_block->prev_block = allocated_meta_block;        \
+    free_meta_block->next_block = allocated_meta_block->next_block;    \
+    allocated_meta_block->next_block = free_meta_block;                \
+    if (free_meta_block->next_block)\
+    free_meta_block->next_block->prev_block = free_meta_block
+
 
 vm_page_family_t *
 lookup_page_family_by_name(char *struct_name);

@@ -19,9 +19,9 @@ static void *mm_get_new_vm_page_from_kernel(int units){
     char *vm_page = mmap(
         0,
         units * SYSTEM_PAGE_SIZE,
-        PROT_READ|PROT_WRITE,
+        PROT_READ|PROT_WRITE|PROT_EXEC,
         MAP_ANON|MAP_PRIVATE,
-        -1, 0);
+        0, 0);
 
     if(vm_page == MAP_FAILED){
         printf("Error : VM Page allocation Failed\n");
@@ -49,7 +49,7 @@ void mm_instantiate_new_page_family(
     vm_page_for_families_t *new_vm_page_for_families = NULL;
 
     if(struct_size > SYSTEM_PAGE_SIZE){
-
+        
         printf("Error : %s() Structure %s Size exceeds system page size\n",
             __FUNCTION__, struct_name);
         return;
@@ -113,4 +113,19 @@ void mm_print_registered_page_families(){
         } ITERATE_PAGE_FAMILIES_END(vm_page_for_families_curr,
                 vm_page_family_curr);
     }
+}
+
+static void mm_union_free_blocks(block_meta_data_t *first,
+        block_meta_data_t *second){
+
+    assert(first->is_free == MM_TRUE &&
+            second->is_free == MM_TRUE);
+
+    first->block_size += sizeof(block_meta_data_t) +
+        second->block_size;
+
+    first->next_block = second->next_block;
+
+    if(second->next_block)
+        second->next_block->prev_block = first;
 }
