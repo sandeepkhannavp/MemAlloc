@@ -19,15 +19,15 @@ void mm_init(){
 }
 
 
-// Argument to the API is the number of contiguous virtual memory pages which our user process is requesting from the kernel - it allocates contiguous VM pages
+
 // Return the pointer to the start of the virtual memory region allocated
 static void *mm_get_new_vm_page_from_kernel(int units){
 
-    char * vm_page = mmap( //system call to allocate VM page
+    char * vm_page = mmap( 
             0, 
-            units * SYSTEM_PAGE_SIZE, // amount of memory we need - our system page size * units needed
-            PROT_READ|PROT_WRITE, //permissions
-            MAP_ANON|MAP_PRIVATE, //flags - inorder to request a virtual memory page from the kernel space from the virtual address space of the process - use these flags
+            units * SYSTEM_PAGE_SIZE, 
+            PROT_READ|PROT_WRITE, 
+            MAP_ANON|MAP_PRIVATE, 
             -1,0);
      if (vm_page == MAP_FAILED) {
         printf("Error : VM Page allocation Failed\n");
