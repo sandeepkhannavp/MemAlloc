@@ -25,7 +25,7 @@ void glthread_add_last(glthread_t *base_glthread, glthread_t *new_glthread);
 #define IS_GLTHREAD_LIST_EMPTY(glthreadptr)         \
     ((glthreadptr)->right == 0 && (glthreadptr)->left == 0)
 
-#define GLTHREAD_TO_STRUCT(fn_name, structure_name, field_name)                        \
+#define GLTHREAD_TO_STRUCT(fn_name, structure_name, field_name, glthreadptr)           \
     static inline structure_name * fn_name(glthread_t *glthreadptr){                   \
         return (structure_name *)((char *)(glthreadptr) - (char *)&(((structure_name *)0)->field_name)); \
     }
