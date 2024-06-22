@@ -1,10 +1,7 @@
 #ifndef __GLUETHREAD__
 #define __GLUETHREAD__
 
-//In glthread, the application data will be glued to the node, think of it like application data has some sticky gum, using which it can stick itself to any linked list nodes
-//In glthread’s node definition, there won’t be any data pointer like conventional linked lists, there will only  be left and right pointers.
 typedef struct _glthread{
-
     struct _glthread *left;
     struct _glthread *right;
 } glthread_t;
@@ -18,9 +15,6 @@ void remove_glthread(glthread_t *glthread);
 void init_glthread(glthread_t *glthread);
 
 void glthread_add_last(glthread_t *base_glthread, glthread_t *new_glthread);
-
-#define IS_QUEUED_UP_IN_THREAD(glthreadptr) \
-	(!((glthreadptr)->right == 0 && (glthreadptr)->left == 0))
 
 #define IS_GLTHREAD_LIST_EMPTY(glthreadptr)         \
     ((glthreadptr)->right == 0 && (glthreadptr)->left == 0)
@@ -57,7 +51,6 @@ void glthread_priority_insert(glthread_t *base_glthread,
                          int (*comp_fn)(void *, void *),
                          int offset);
 
-glthread_t *dequeue_glthread_first(glthread_t *base_glthread);
 
 #if 0
 void *

@@ -2,37 +2,34 @@
 #define __MM__
 
 #include "gluethread/glthread.h"
-#include <stdint.h> /*uint32_t*/
+#include <stdint.h> 
 
 typedef enum{
-
     MM_FALSE,
     MM_TRUE
 } vm_bool_t;
 
 typedef struct block_meta_data_{
-
     vm_bool_t is_free;
     uint32_t block_size;
-    uint32_t offset;    /*offset from the start of the page*/
+    uint32_t offset;    
     glthread_t priority_thread_glue;
     struct block_meta_data_ *prev_block;
     struct block_meta_data_ *next_block;
 } block_meta_data_t;
-
 GLTHREAD_TO_STRUCT(glthread_to_block_meta_data,
     block_meta_data_t, priority_thread_glue, glthread_ptr);
 
 #define offset_of(container_structure, field_name)  \
     ((size_t)&(((container_structure *)0)->field_name))
 
-/*Forward Declaration*/
+
 struct vm_page_family_;
 
 typedef struct vm_page_{
     struct vm_page_ *next;
     struct vm_page_ *prev;
-    struct vm_page_family_ *pg_family; /*back pointer*/
+    struct vm_page_family_ *pg_family; 
     block_meta_data_t block_meta_data;
     char page_memory[0];
 } vm_page_t;
@@ -78,7 +75,21 @@ typedef struct vm_page_for_families_{
 #define MAX_FAMILIES_PER_VM_PAGE   \
     ((SYSTEM_PAGE_SIZE - sizeof(vm_page_for_families_t *))/sizeof(vm_page_family_t))
 
-vm_page_t *allocate_vm_page();
+static inline block_meta_data_t *
+mm_get_biggest_free_block_page_family(
+        vm_page_family_t *vm_page_family){
+
+    glthread_t *biggest_free_block_glue =
+        vm_page_family->free_block_priority_list_head.right;
+
+    if(biggest_free_block_glue)
+        return glthread_to_block_meta_data(biggest_free_block_glue);
+
+    return NULL;
+}
+
+vm_page_t *
+allocate_vm_page();
 
 #define MARK_VM_PAGE_EMPTY(vm_page_t_ptr)                                 \
     vm_page_t_ptr->block_meta_data.next_block = NULL;                     \
@@ -107,14 +118,15 @@ vm_page_t_ptr->block_meta_data.is_free = MM_TRUE
 
 #define ITERATE_PAGE_FAMILIES_BEGIN(vm_page_for_families_ptr, curr)                 \
 {                                                                                   \
-    uint32_t count = 0;                                                             \
+    uint32_t _count = 0;                                                             \
     for(curr = (vm_page_family_t *)&vm_page_for_families_ptr->vm_page_family[0];    \
-        curr->struct_size && count < MAX_FAMILIES_PER_VM_PAGE;                      \
-        curr++,count++){
+        curr->struct_size && _count < MAX_FAMILIES_PER_VM_PAGE;                      \
+        curr++,_count++){
 
 #define ITERATE_PAGE_FAMILIES_END(vm_page_for_families_ptr, curr)   }}
 
-vm_page_family_t *lookup_page_family_by_name(char *struct_name);
+vm_page_family_t *
+lookup_page_family_by_name(char *struct_name);
 
 void mm_vm_page_delete_and_free(vm_page_t *vm_page);
-#endif /**/
+#endif

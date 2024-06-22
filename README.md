@@ -2,7 +2,7 @@
 
 Re-writing the OS Coursework project - Linux Memory manager
 
-for running the memoru manager,
+for running the memory manager,
 
 gcc -g -c testapp.c -o testapp.o
 gcc -g -c mm.c -o mm.o
